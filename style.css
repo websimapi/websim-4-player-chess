@@ -1,0 +1,200 @@
+:root {
+    --bg-color: #2c2c2c;
+    --board-bg: #deb887;
+    --cell-light: #f0d9b5;
+    --cell-dark: #b58863;
+    --cell-void: transparent;
+    
+    --p-red: #ff4444;
+    --p-blue: #4488ff;
+    --p-yellow: #ffcc00;
+    --p-green: #44cc44;
+    
+    --highlight-move: rgba(100, 255, 100, 0.5);
+    --highlight-capture: rgba(255, 50, 50, 0.5);
+    --highlight-selected: rgba(255, 255, 0, 0.5);
+    --highlight-last: rgba(100, 100, 255, 0.3);
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+#ui-header {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    z-index: 10;
+}
+
+#turn-indicator {
+    background: #333;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.3s, color 0.3s;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+#board-wrapper {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 100vw;
+    aspect-ratio: 1/1;
+    position: relative;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    grid-template-rows: repeat(14, 1fr);
+    width: 100%;
+    height: 100%;
+    max-width: 95vw;
+    max-height: 95vw; /* Maintain square aspect ratio within screen */
+    background-color: var(--cell-void);
+}
+
+.cell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cell.valid {
+    background-color: var(--cell-light);
+}
+
+.cell.valid.dark {
+    background-color: var(--cell-dark);
+}
+
+.cell.void {
+    visibility: hidden;
+}
+
+.cell.selected {
+    background-color: var(--highlight-selected) !important;
+}
+
+.cell.hint-move::after {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 30%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+}
+
+.cell.hint-capture {
+    background-color: var(--highlight-capture) !important; /* Make captures obvious */
+    box-shadow: inset 0 0 10px red;
+}
+
+.cell.last-move {
+    background-color: var(--highlight-last) !important;
+}
+
+.piece {
+    width: 90%;
+    height: 90%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: transform 0.2s;
+}
+
+/* Piece Coloring via Filters */
+/* Base images are white/grey. We colorize them. */
+.piece.red { filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.5)) sepia(1) hue-rotate(-50deg) saturate(5) brightness(0.9); }
+.piece.blue { filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.5)) sepia(1) hue-rotate(170deg) saturate(4) brightness(0.9); }
+.piece.yellow { filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.5)) sepia(1) hue-rotate(5deg) saturate(5) brightness(1.2); }
+.piece.green { filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.5)) sepia(1) hue-rotate(60deg) saturate(3) brightness(0.9); }
+
+.dead {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+#ui-footer {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+button {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:active {
+    background: #555;
+}
+
+/* Modal */
+.hidden { display: none !important; }
+
+#modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+#modal {
+    background: #333;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 80%;
+}
+
+#modal h2 { margin-top: 0; }
+#modal p { font-size: 1.2rem; margin: 20px 0; }
+#modal button {
+    background: var(--p-green);
+    color: black;
+    font-weight: bold;
+}
